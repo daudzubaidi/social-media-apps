@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/* ============================================
+   Sociality — Tailwind 4 Theme Configuration
+   All tokens from PLAN.md Section 1 (Figma)
+   ============================================ */
+
+@theme inline {
+  /* --- Colors --- */
+  --color-neutral-25: #fdfdfd;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e9eaeb;
+  --color-neutral-300: #d5d7da;
+  --color-neutral-400: #a4a7ae;
+  --color-neutral-500: #717680;
+  --color-neutral-600: #535862;
+  --color-neutral-700: #414651;
+  --color-neutral-800: #252b37;
+  --color-neutral-900: #181d27;
+  --color-neutral-950: #0a0d12;
+
+  --color-primary-100: #f6f9fe;
+  --color-primary-200: #7f51f9;
+  --color-primary-300: #6936f2;
+
+  --color-brand-600: #7f56d9;
+  --color-brand-700: #6941c6;
+
+  --color-success: #079455;
+  --color-warning: #fdb022;
+
+  /* Semantic colors mapped to CSS variables */
+  --color-destructive: var(--destructive);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* --- Typography --- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --font-size-display-xl: 60px;
+  --font-size-display-xl--line-height: 72px;
+  --font-size-display-3xl: 56px;
+  --font-size-display-3xl--line-height: 68px;
+  --font-size-display-2xl: 48px;
+  --font-size-display-2xl--line-height: 60px;
+  --font-size-display-lg: 36px;
+  --font-size-display-lg--line-height: 44px;
+  --font-size-display-md: 32px;
+  --font-size-display-md--line-height: 42px;
+  --font-size-display-sm: 28px;
+  --font-size-display-sm--line-height: 38px;
+  --font-size-display-xs: 24px;
+  --font-size-display-xs--line-height: 36px;
+
+  /* Override default Tailwind text sizes to match Figma */
+  --font-size-xl: 20px;
+  --font-size-xl--line-height: 34px;
+  --font-size-lg: 18px;
+  --font-size-lg--line-height: 32px;
+  --font-size-base: 16px;
+  --font-size-base--line-height: 30px;
+  --font-size-sm: 14px;
+  --font-size-sm--line-height: 28px;
+  --font-size-xs: 12px;
+  --font-size-xs--line-height: 24px;
+
+  /* Font weights — custom Figma values */
+  --font-weight-normal: 400;
+  --font-weight-medium: 510;
+  --font-weight-semibold: 590;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 760;
+
+  /* --- Spacing --- */
+  --spacing-none: 0px;
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 6px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+  --spacing-2xl: 20px;
+  --spacing-3xl: 24px;
+  --spacing-4xl: 32px;
+  --spacing-5xl: 40px;
+  --spacing-6xl: 48px;
+  --spacing-7xl: 64px;
+  --spacing-8xl: 80px;
+  --spacing-9xl: 96px;
+  --spacing-10xl: 128px;
+  --spacing-11xl: 160px;
+
+  /* --- Border Radius --- */
+  --radius-none: 0px;
+  --radius-xxs: 2px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-xs: 0 1px 2px 0 #0a0d120d;
+  --shadow-lg: 0 2px 2px -1px #0a0d120a, 0 4px 6px -2px #0a0d1208, 0 12px 16px -4px #0a0d1214;
+}
+
+/* ============================================
+   shadcn/ui CSS Variables — DARK MODE
+   ============================================ */
+
+:root {
+  --background: #0a0d12;
+  --foreground: #fafafa;
+  --card: #181d27;
+  --card-foreground: #fafafa;
+  --popover: #181d27;
+  --popover-foreground: #fafafa;
+  --primary: #7f51f9;
+  --primary-foreground: #ffffff;
+  --secondary: #252b37;
+  --secondary-foreground: #fafafa;
+  --muted: #252b37;
+  --muted-foreground: #a4a7ae;
+  --accent: #252b37;
+  --accent-foreground: #fafafa;
+  --destructive: #b41759;
+  --border: #414651;
+  --input: #252b37;
+  --ring: #7f51f9;
+  --radius: 8px;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
