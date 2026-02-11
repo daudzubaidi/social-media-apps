@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { MessageCircle, Send, Heart, Bookmark } from "lucide-react";
+import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { FallbackImage } from "@/components/shared/fallback-image";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { ROUTES } from "@/config/routes";
+import { LikeButton } from "@/components/post/like-button";
+import { SaveButton } from "@/components/post/save-button";
 import type { Post } from "@/types/post";
 
 interface PostCardProps {
@@ -14,15 +16,27 @@ interface PostCardProps {
   className?: string;
 }
 
-const CAPTION_PREVIEW_LENGTH = 140;
-
 export function PostCard({ post, className }: PostCardProps) {
+  const captionRef = useRef<HTMLParagraphElement>(null);
   const [isCaptionExpanded, setIsCaptionExpanded] = useState(false);
+  const [isCaptionOverflowing, setIsCaptionOverflowing] = useState(false);
 
-  const shouldShowToggle = useMemo(
-    () => post.caption.length > CAPTION_PREVIEW_LENGTH,
-    [post.caption],
-  );
+  useEffect(() => {
+    const captionElement = captionRef.current;
+    if (!captionElement) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      setIsCaptionOverflowing(captionElement.scrollHeight > captionElement.clientHeight + 1);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [post.id, post.caption]);
+
+  useEffect(() => {
+    setIsCaptionExpanded(false);
+  }, [post.id]);
 
   async function handleShare() {
     try {
@@ -88,6 +102,7 @@ export function PostCard({ post, className }: PostCardProps) {
 
         <div className="space-y-1">
           <p
+            ref={captionRef}
             className="text-sm text-foreground"
             style={
               isCaptionExpanded
@@ -102,7 +117,7 @@ export function PostCard({ post, className }: PostCardProps) {
           >
             {post.caption}
           </p>
-          {shouldShowToggle && (
+          {isCaptionOverflowing && (
             <button
               type="button"
               onClick={() => setIsCaptionExpanded((prev) => !prev)}
@@ -114,16 +129,11 @@ export function PostCard({ post, className }: PostCardProps) {
         </div>
 
         <div className="flex items-center gap-4 border-t border-border pt-3">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground"
-            aria-label="Likes"
-          >
-            <Heart
-              className={cn("size-4", post.likedByMe && "fill-current text-primary")}
-            />
-            <span>{post.likeCount}</span>
-          </button>
+          <LikeButton
+            postId={post.id}
+            likedByMe={post.likedByMe}
+            likeCount={post.likeCount}
+          />
 
           <button
             type="button"
@@ -143,15 +153,7 @@ export function PostCard({ post, className }: PostCardProps) {
             <Send className="size-4" />
           </button>
 
-          <button
-            type="button"
-            className="ml-auto inline-flex items-center text-sm text-muted-foreground"
-            aria-label="Saved state"
-          >
-            <Bookmark
-              className={cn("size-4", post.savedByMe && "fill-current text-primary")}
-            />
-          </button>
+          <SaveButton postId={post.id} savedByMe={post.savedByMe} className="ml-auto" />
         </div>
       </div>
     </article>

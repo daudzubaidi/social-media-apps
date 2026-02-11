@@ -6,12 +6,12 @@ export interface Post {
     id: string;
     username: string;
     name: string;
-    avatarUrl?: string;
+    avatarUrl?: string | null;
   };
   likeCount: number;
   commentCount: number;
   likedByMe: boolean;
-  savedByMe: boolean;
+  savedByMe?: boolean;
   createdAt: string;
 }
 
