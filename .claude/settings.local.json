@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add button input dialog dropdown-menu avatar skeleton tabs card -y)",
+      "mcp__figma-mcp__get_screenshot"
+    ]
+  }
+}
