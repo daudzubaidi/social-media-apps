@@ -16,6 +16,25 @@ function clearAuthCookie(): void {
   document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
 }
 
+function getTokenFromCookie(): string | null {
+  if (!canUseDOM()) return null;
+
+  const cookieEntry = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith(`${TOKEN_KEY}=`));
+
+  if (!cookieEntry) return null;
+
+  const value = cookieEntry.slice(TOKEN_KEY.length + 1);
+  if (!value) return null;
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function emitAuthTokenChange(): void {
   if (!canUseDOM()) return;
   window.dispatchEvent(new Event(AUTH_TOKEN_CHANGE_EVENT));
@@ -23,7 +42,7 @@ function emitAuthTokenChange(): void {
 
 export function getToken(): string | null {
   if (!canUseDOM()) return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY) ?? getTokenFromCookie();
 }
 
 export function setToken(token: string): void {

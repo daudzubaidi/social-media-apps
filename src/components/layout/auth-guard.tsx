@@ -13,17 +13,17 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isHydrated } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isHydrated && !isAuthenticated) {
       router.replace(
         `${ROUTES.LOGIN}?returnTo=${encodeURIComponent(pathname)}`,
       );
     }
-  }, [isAuthenticated, router, pathname]);
+  }, [isHydrated, isAuthenticated, router, pathname]);
 
-  if (!isAuthenticated) {
+  if (!isHydrated || !isAuthenticated) {
     return <LoadingState className="min-h-screen" />;
   }
 
