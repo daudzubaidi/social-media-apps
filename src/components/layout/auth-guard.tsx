@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { getToken } from "@/lib/auth";
 import { ROUTES } from "@/config/routes";
 import { LoadingState } from "@/components/shared/loading-state";
+import { useAuth } from "@/hooks/use-auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,20 +13,17 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isChecked, setIsChecked] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
+    if (!isAuthenticated) {
       router.replace(
         `${ROUTES.LOGIN}?returnTo=${encodeURIComponent(pathname)}`,
       );
-    } else {
-      setIsChecked(true);
     }
-  }, [router, pathname]);
+  }, [isAuthenticated, router, pathname]);
 
-  if (!isChecked) {
+  if (!isAuthenticated) {
     return <LoadingState className="min-h-screen" />;
   }
 

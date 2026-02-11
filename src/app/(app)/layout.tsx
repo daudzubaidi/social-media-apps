@@ -1,17 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getToken } from "@/lib/auth";
 import { Navbar } from "@/components/layout/navbar";
 import { MobileHeader } from "@/components/layout/mobile-header";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    setIsAuthenticated(!!getToken());
-  }, []);
+  const { isAuthenticated } = useAuth();
 
   return (
     <>

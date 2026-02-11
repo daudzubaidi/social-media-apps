@@ -91,24 +91,27 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 760;
 
-  /* --- Spacing --- */
-  --spacing-none: 0px;
-  --spacing-xxs: 2px;
-  --spacing-xs: 4px;
-  --spacing-sm: 6px;
-  --spacing-md: 8px;
-  --spacing-lg: 12px;
-  --spacing-xl: 16px;
-  --spacing-2xl: 20px;
-  --spacing-3xl: 24px;
-  --spacing-4xl: 32px;
-  --spacing-5xl: 40px;
-  --spacing-6xl: 48px;
-  --spacing-7xl: 64px;
-  --spacing-8xl: 80px;
-  --spacing-9xl: 96px;
-  --spacing-10xl: 128px;
-  --spacing-11xl: 160px;
+  /* --- Spacing tokens ---
+     Use a dedicated prefix to avoid overriding Tailwind size utilities
+     like `max-w-sm`, `max-w-md`, `sm:max-w-lg`.
+  */
+  --spacing-token-none: 0px;
+  --spacing-token-xxs: 2px;
+  --spacing-token-xs: 4px;
+  --spacing-token-sm: 6px;
+  --spacing-token-md: 8px;
+  --spacing-token-lg: 12px;
+  --spacing-token-xl: 16px;
+  --spacing-token-2xl: 20px;
+  --spacing-token-3xl: 24px;
+  --spacing-token-4xl: 32px;
+  --spacing-token-5xl: 40px;
+  --spacing-token-6xl: 48px;
+  --spacing-token-7xl: 64px;
+  --spacing-token-8xl: 80px;
+  --spacing-token-9xl: 96px;
+  --spacing-token-10xl: 128px;
+  --spacing-token-11xl: 160px;
 
   /* --- Border Radius --- */
   --radius-none: 0px;

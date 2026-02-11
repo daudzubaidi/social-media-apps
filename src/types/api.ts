@@ -22,9 +22,31 @@ export interface ApiError {
   data: null | ValidationError[];
 }
 
-export interface ValidationError {
+export interface LegacyValidationError {
   field: string;
   message: string;
+}
+
+export interface PathValidationError {
+  path: string;
+  msg: string;
+  type?: string;
+  location?: string;
+  value?: unknown;
+}
+
+export type ValidationError = LegacyValidationError | PathValidationError;
+
+export function getValidationErrorField(error: ValidationError): string | null {
+  if ("field" in error) return error.field;
+  if ("path" in error) return error.path;
+  return null;
+}
+
+export function getValidationErrorMessage(error: ValidationError): string | null {
+  if ("message" in error) return error.message;
+  if ("msg" in error) return error.msg;
+  return null;
 }
 
 export function extractPaginatedList<T>(

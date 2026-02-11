@@ -9,8 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { clearToken } from "@/lib/auth";
 import { ROUTES } from "@/config/routes";
+import { useLogout } from "@/services/queries/auth";
 
 interface UserMenuProps {
   avatarUrl?: string;
@@ -19,10 +19,16 @@ interface UserMenuProps {
 
 export function UserMenu({ avatarUrl, name }: UserMenuProps) {
   const router = useRouter();
+  const logout = useLogout();
 
   function handleLogout() {
-    clearToken();
-    router.push(ROUTES.LOGIN);
+    if (logout.isPending) return;
+
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        router.replace(ROUTES.LOGIN);
+      },
+    });
   }
 
   return (
@@ -42,9 +48,9 @@ export function UserMenu({ avatarUrl, name }: UserMenuProps) {
           <User className="mr-2 size-4" />
           My Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleLogout} disabled={logout.isPending}>
           <LogOut className="mr-2 size-4" />
-          Logout
+          {logout.isPending ? "Logging out..." : "Logout"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
