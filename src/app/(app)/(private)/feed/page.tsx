@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import { Users } from "lucide-react";
 import { useFeed } from "@/services/queries/feed";
 import type { Post } from "@/types/post";
@@ -12,25 +12,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function FeedCardSkeleton() {
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-border bg-card">
-      <Skeleton className="aspect-square w-full rounded-none" />
-      <div className="space-y-4 p-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="size-10 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-3 w-1/4" />
-          </div>
-        </div>
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
-        <div className="flex items-center gap-4 border-t border-border pt-3">
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-4 w-5" />
-          <Skeleton className="ml-auto h-4 w-5" />
+    <div className="w-full">
+      {/* Header skeleton */}
+      <div className="flex items-center gap-2 pb-2 md:gap-3 md:pb-3">
+        <Skeleton className="size-11 shrink-0 rounded-full md:size-16" />
+        <div className="flex-1 space-y-1 md:space-y-2">
+          <Skeleton className="h-4 w-1/3 md:h-5" />
+          <Skeleton className="h-3 w-1/4 md:h-4" />
         </div>
       </div>
+
+      {/* Image skeleton */}
+      <Skeleton className="aspect-square w-full rounded-lg" />
+
+      {/* Actions skeleton */}
+      <div className="flex items-center justify-between py-2 md:py-3">
+        <div className="flex items-center gap-3 md:gap-4">
+          <Skeleton className="h-6 w-12" />
+          <Skeleton className="h-6 w-12" />
+          <Skeleton className="size-6" />
+        </div>
+        <Skeleton className="size-6" />
+      </div>
+
+      {/* Caption skeleton */}
+      <Skeleton className="h-4 w-full md:h-5" />
+      <Skeleton className="h-4 w-4/5 md:h-5" />
     </div>
   );
 }
@@ -68,8 +75,9 @@ export default function FeedPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 px-4 py-6 md:px-0">
+      <div className="mx-auto flex w-full max-w-[361px] flex-col gap-4 px-4 pb-4 pt-4 md:max-w-[600px] md:gap-6 md:px-0 md:pb-6 md:pt-10">
         <FeedCardSkeleton />
+        <hr className="border-border" />
         <FeedCardSkeleton />
       </div>
     );
@@ -79,31 +87,38 @@ export default function FeedPage() {
     const message = error instanceof Error ? error.message : "Failed to load feed";
 
     return (
-      <ErrorState
-        message={message}
-        onRetry={() => {
-          void refetch();
-        }}
-        className="min-h-[60vh]"
-      />
+      <div className="mx-auto w-full max-w-[361px] px-4 pt-4 md:max-w-[600px] md:px-0 md:pt-10">
+        <ErrorState
+          message={message}
+          onRetry={() => {
+            void refetch();
+          }}
+          className="min-h-[60vh]"
+        />
+      </div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <EmptyState
-        icon={Users}
-        title="No posts yet"
-        description="Follow someone to see posts here"
-        className="min-h-[60vh]"
-      />
+      <div className="mx-auto w-full max-w-[361px] px-4 pt-4 md:max-w-[600px] md:px-0 md:pt-10">
+        <EmptyState
+          icon={Users}
+          title="No posts yet"
+          description="Follow someone to see posts here"
+          className="min-h-[60vh]"
+        />
+      </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 px-4 py-6 md:px-0">
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+    <div className="mx-auto flex w-full max-w-[361px] flex-col gap-4 px-4 pb-4 pt-4 md:max-w-[600px] md:gap-6 md:px-0 md:pb-6 md:pt-10">
+      {posts.map((post, index) => (
+        <Fragment key={post.id}>
+          <PostCard post={post} />
+          {index < posts.length - 1 && <hr className="border-neutral-900" />}
+        </Fragment>
       ))}
 
       <InfiniteScroll

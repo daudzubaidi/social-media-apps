@@ -11,42 +11,58 @@ import { cn } from "@/lib/utils";
 export function MobileNav() {
   const pathname = usePathname();
   const dispatch = useDispatch();
+  const homeActive = pathname === ROUTES.FEED;
+  const profileRoute = pathname.startsWith(ROUTES.ME);
+
+  if (pathname.startsWith(ROUTES.ME_EDIT)) {
+    return null;
+  }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background md:hidden">
-      <div className="mx-auto flex h-16 max-w-[345px] items-center justify-around">
+    <nav className="fixed inset-x-0 bottom-4 z-50">
+      <div className="mx-auto flex h-16 w-[345px] items-center justify-center gap-[45px] rounded-[1000px] border border-neutral-700 bg-neutral-950 shadow-lg md:h-20 md:w-[360px]">
         <Link
           href={ROUTES.FEED}
-          className={cn(
-            "flex flex-col items-center gap-1",
-            pathname === ROUTES.FEED
-              ? "text-primary"
-              : "text-muted-foreground",
-          )}
+          className="flex w-[94px] flex-col items-center justify-center gap-[2px]"
         >
           <Home className="size-5" />
-          <span className="text-xs">Home</span>
+          <span
+            className={cn(
+              "text-center text-xs",
+              profileRoute
+                ? "font-bold leading-6 text-neutral-25"
+                : homeActive
+                ? "font-bold leading-6 text-primary-200"
+                : "font-normal leading-4 text-neutral-25",
+            )}
+          >
+            Home
+          </span>
         </Link>
 
         <button
           onClick={() => dispatch(setCreatePostDialogOpen(true))}
-          className="flex items-center justify-center rounded-full bg-primary p-3"
+          className="flex size-11 items-center justify-center rounded-full bg-primary-300"
           aria-label="Create post"
         >
-          <Plus className="size-5 text-primary-foreground" />
+          <Plus className="size-6 text-white" strokeWidth={3} />
         </button>
 
         <Link
           href={ROUTES.ME}
-          className={cn(
-            "flex flex-col items-center gap-1",
-            pathname.startsWith(ROUTES.ME)
-              ? "text-primary"
-              : "text-muted-foreground",
-          )}
+          className="flex w-[94px] flex-col items-center justify-center gap-[2px]"
         >
           <User className="size-5" />
-          <span className="text-xs">Profile</span>
+          <span
+            className={cn(
+              "text-center text-xs",
+              profileRoute
+                ? "font-normal leading-4 text-primary-200"
+                : "font-normal leading-4 text-neutral-25",
+            )}
+          >
+            Profile
+          </span>
         </Link>
       </div>
     </nav>

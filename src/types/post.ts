@@ -10,6 +10,7 @@ export interface Post {
   };
   likeCount: number;
   commentCount: number;
+  shareCount?: number;
   likedByMe: boolean;
   savedByMe?: boolean;
   createdAt: string;

@@ -6,17 +6,22 @@ interface AuthBrandProps {
 
 export function AuthBrand({ className }: AuthBrandProps) {
   return (
-    <div className={`flex items-center justify-center gap-[11px] ${className ?? ""}`}>
+    <div
+      className={`flex items-center justify-center gap-[11px] ${className ?? ""}`}
+    >
       <Image
         src="/assets/auth/logo-icon.svg"
         alt=""
         width={30}
         height={30}
-        className="size-[30px]"
+        className="size-[30px] shrink-0"
         aria-hidden="true"
         priority
+        unoptimized
       />
-      <p className="text-display-xs font-bold text-neutral-25">Sociality</p>
+      <p className="text-display-xs font-bold leading-[36px] text-[#fdfdfd]">
+        Sociality
+      </p>
     </div>
   );
 }

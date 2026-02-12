@@ -46,3 +46,6 @@ next-env.d.ts
 
 # editor & tools
 .vscode/
+
+# temporary artifacts
+.tmp/

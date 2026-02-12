@@ -13,7 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Navbar isAuthenticated={isAuthenticated} />
       <MobileHeader isAuthenticated={isAuthenticated} />
       <main className="pb-20 md:pb-0">{children}</main>
-      {isAuthenticated && <MobileNav />}
+      <MobileNav />
     </>
   );
 }

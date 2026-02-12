@@ -40,9 +40,33 @@ function emitAuthTokenChange(): void {
   window.dispatchEvent(new Event(AUTH_TOKEN_CHANGE_EVENT));
 }
 
+function parseJwtPayload(token: string): Record<string, unknown> | null {
+  const payload = token.split(".")[1];
+  if (!payload) return null;
+
+  try {
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+    const decoded = window.atob(padded);
+    return JSON.parse(decoded) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 export function getToken(): string | null {
   if (!canUseDOM()) return null;
   return localStorage.getItem(TOKEN_KEY) ?? getTokenFromCookie();
+}
+
+export function getAuthUserId(): string | null {
+  const token = getToken();
+  if (!token) return null;
+
+  const payload = parseJwtPayload(token);
+  if (!payload || payload.id == null) return null;
+
+  return String(payload.id);
 }
 
 export function setToken(token: string): void {

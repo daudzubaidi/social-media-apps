@@ -2,6 +2,7 @@ import { useMutation, useQueryClient, type InfiniteData } from "@tanstack/react-
 import { apiClient } from "@/services/api/client";
 import { API_ENDPOINTS } from "@/config/constants";
 import { queryKeys } from "@/lib/query-keys";
+import { persistSavedPostState } from "@/lib/saved-posts";
 import type { ApiResponse } from "@/types/api";
 import type { Post } from "@/types/post";
 import type { FeedPage } from "@/services/queries/feed";
@@ -15,6 +16,7 @@ type PostDetailCache = Post | { post: Post } | undefined;
 interface ToggleSaveContext {
   previousFeed?: InfiniteData<FeedPage>;
   previousDetail?: PostDetailCache;
+  previousSavedByMe: boolean;
 }
 
 function updateSaveState(post: Post, nextSavedByMe: boolean): Post {
@@ -55,6 +57,7 @@ export function useSaveToggle(postId: string) {
     },
     onMutate: async ({ savedByMe }) => {
       const nextSavedByMe = !savedByMe;
+      persistSavedPostState(postId, nextSavedByMe);
 
       await Promise.all([
         queryClient.cancelQueries({ queryKey: queryKeys.feed.all }),
@@ -83,7 +86,7 @@ export function useSaveToggle(postId: string) {
         patchPostDetailCache(oldData, nextSavedByMe),
       );
 
-      return { previousFeed, previousDetail };
+      return { previousFeed, previousDetail, previousSavedByMe: savedByMe };
     },
     onError: (_error, _variables, context) => {
       if (context?.previousFeed) {
@@ -91,6 +94,9 @@ export function useSaveToggle(postId: string) {
       }
       if (context?.previousDetail) {
         queryClient.setQueryData(detailKey, context.previousDetail);
+      }
+      if (context) {
+        persistSavedPostState(postId, context.previousSavedByMe);
       }
     },
     onSettled: () => {

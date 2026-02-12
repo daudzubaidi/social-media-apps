@@ -37,9 +37,9 @@ export function SearchDropdown({
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-lg"
+      className="absolute left-0 top-full z-50 mt-2 w-full rounded-xl border border-neutral-700 bg-neutral-900 shadow-lg"
     >
-      <div className="max-h-80 overflow-y-auto p-2">
+      <div className="max-h-[384px] overflow-y-auto p-5">
         {isLoading && (
           <p className="px-3 py-4 text-center text-sm text-muted-foreground">
             Searching...
@@ -47,33 +47,43 @@ export function SearchDropdown({
         )}
 
         {!isLoading && results.length === 0 && (
-          <p className="px-3 py-4 text-center text-sm text-muted-foreground">
-            User not found
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <p className="text-base font-bold leading-[30px] tracking-[-0.32px] text-foreground">
+              No results found
+            </p>
+            <p className="mt-1 text-sm leading-7 tracking-[-0.28px] text-muted-foreground">
+              Change your keyword
+            </p>
+          </div>
         )}
 
-        {!isLoading &&
-          results.map((user) => (
-            <Link
-              key={user.id}
-              href={ROUTES.PROFILE(user.username)}
-              onClick={onClose}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-accent"
-            >
-              <Avatar className="size-10">
-                <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback>
-                  <User className="size-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{user.name}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  @{user.username}
-                </p>
-              </div>
-            </Link>
-          ))}
+        {!isLoading && results.length > 0 && (
+          <div className="space-y-4">
+            {results.map((user) => (
+              <Link
+                key={user.id}
+                href={ROUTES.PROFILE(user.username)}
+                onClick={onClose}
+                className="flex h-14 items-center gap-3 transition-opacity hover:opacity-80"
+              >
+                <Avatar className="size-10 shrink-0">
+                  <AvatarImage src={user.avatarUrl} alt={user.name} />
+                  <AvatarFallback>
+                    <User className="size-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold leading-7 tracking-[-0.14px] text-foreground">
+                    {user.name}
+                  </p>
+                  <p className="truncate text-sm leading-7 tracking-[-0.14px] text-muted-foreground">
+                    {user.username}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import { Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BookmarkIcon } from "@/components/icons/bookmark";
 import { useSaveToggle } from "@/services/queries/saves";
 
 interface SaveButtonProps {
@@ -20,14 +20,14 @@ export function SaveButton({ postId, savedByMe, className }: SaveButtonProps) {
       onClick={() => saveToggle.mutate({ savedByMe: isSaved })}
       disabled={saveToggle.isPending}
       className={cn(
-        "inline-flex items-center text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-        isSaved ? "text-primary" : "text-muted-foreground",
+        "inline-flex items-center transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+        isSaved ? "text-destructive" : "text-foreground hover:text-foreground/80",
         className,
       )}
       aria-label={isSaved ? "Unsave post" : "Save post"}
       aria-pressed={isSaved}
     >
-      <Bookmark className={cn("size-4", isSaved && "fill-current")} />
+      <BookmarkIcon filled={isSaved} className="size-6" />
     </button>
   );
 }
