@@ -1,35 +1,57 @@
-import Image from "next/image";
+"use client";
 
-const galleryImages = [
-  "/assets/figma-profile/gallery/1.png",
-  "/assets/figma-profile/gallery/2.png",
-  "/assets/figma-profile/gallery/3.png",
-  "/assets/figma-profile/gallery/4.png",
-  "/assets/figma-profile/gallery/5.png",
-  "/assets/figma-profile/gallery/6.png",
-  "/assets/figma-profile/gallery/7.png",
-  "/assets/figma-profile/gallery/8.png",
-  "/assets/figma-profile/gallery/9.png",
-];
+import { useMemo } from "react";
+import { ImageIcon } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
+import { PostGrid, PostGridSkeleton } from "@/components/post/post-grid";
+import { useMyPosts } from "@/services/queries/profile";
 
 export default function MeGalleryPage() {
+  const { data, isPending, isError, error, hasNextPage, fetchNextPage, isFetchingNextPage, refetch } =
+    useMyPosts();
+
+  const posts = useMemo(() => {
+    return data?.pages.flatMap((page) => page.items) ?? [];
+  }, [data]);
+
+  if (isPending && posts.length === 0) {
+    return <PostGridSkeleton />;
+  }
+
+  if (isError) {
+    const message = error instanceof Error ? error.message : "Failed to load posts";
+
+    return (
+      <ErrorState
+        message={message}
+        onRetry={() => {
+          void refetch();
+        }}
+        className="min-h-[40vh]"
+      />
+    );
+  }
+
+  if (posts.length === 0) {
+    return (
+      <EmptyState
+        icon={ImageIcon}
+        title="No posts yet"
+        description="Your posts will appear here"
+        className="min-h-[40vh]"
+      />
+    );
+  }
+
   return (
-    <section className="grid grid-cols-3 gap-[1.778px] md:gap-1">
-      {galleryImages.map((src, index) => (
-        <div
-          key={src}
-          className="relative aspect-square overflow-hidden rounded-[2.667px] md:rounded-sm"
-        >
-          <Image
-            src={src}
-            alt={`Gallery image ${index + 1}`}
-            fill
-            sizes="(max-width: 768px) 119px, 268px"
-            className="object-cover"
-            priority={index < 3}
-          />
-        </div>
-      ))}
-    </section>
+    <PostGrid
+      posts={posts}
+      hasMore={Boolean(hasNextPage)}
+      isLoading={isFetchingNextPage}
+      onLoadMore={() => {
+        void fetchNextPage();
+      }}
+    />
   );
 }

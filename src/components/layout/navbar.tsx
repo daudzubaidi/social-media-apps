@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchDropdown } from "@/components/layout/search-dropdown";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchUsers } from "@/services/queries/users";
 import { ROUTES } from "@/config/routes";
 import type { UserListItem } from "@/types/user";
 
@@ -16,10 +18,13 @@ interface NavbarProps {
 export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
-  // Search results will be wired in Commit 9 via useSearchUsers
-  const searchResults: UserListItem[] = [];
-  const isSearching = false;
+  const { data, isLoading } = useSearchUsers(debouncedQuery);
+  const searchResults = useMemo(() => {
+    return data?.pages.flatMap((page) => page.items) ?? [];
+  }, [data]);
+  const isSearching = isLoading;
 
   const handleCloseDropdown = useCallback(() => {
     setShowDropdown(false);

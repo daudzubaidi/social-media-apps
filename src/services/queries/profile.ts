@@ -1,13 +1,15 @@
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { API_ENDPOINTS } from "@/config/constants";
+import { API_ENDPOINTS, PAGINATION_LIMIT } from "@/config/constants";
 import { queryKeys } from "@/lib/query-keys";
 import { apiClient } from "@/services/api/client";
-import type { ApiResponse } from "@/types/api";
+import type { ApiResponse, Pagination } from "@/types/api";
 import type { Profile, UpdateProfileRequest } from "@/types/user";
+import type { Post } from "@/types/post";
 
 type ProfileEnvelope = {
   profile?: Profile;
@@ -138,6 +140,114 @@ export function useUpdateMe() {
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.me.all });
+    },
+  });
+}
+
+interface MyPostsPayload {
+  posts?: Post[];
+  pagination?: Pagination;
+}
+
+interface MyPostsPage {
+  items: Post[];
+  pagination: Pagination;
+}
+
+function normalizePost(post: Post): Post {
+  return {
+    ...post,
+    id: String(post.id),
+    author: {
+      ...post.author,
+      id: String(post.author.id),
+      avatarUrl: post.author.avatarUrl ?? undefined,
+    },
+    likeCount: Number(post.likeCount ?? 0),
+    commentCount: Number(post.commentCount ?? 0),
+    shareCount:
+      typeof post.shareCount === "number" ? Number(post.shareCount) : undefined,
+    likedByMe: Boolean(post.likedByMe),
+    savedByMe: Boolean(post.savedByMe),
+  };
+}
+
+function normalizePagination(
+  pagination: Pagination | undefined,
+  page: number,
+): Pagination {
+  return {
+    page: pagination?.page ?? page,
+    limit: pagination?.limit ?? PAGINATION_LIMIT,
+    total: pagination?.total ?? 0,
+    totalPages: pagination?.totalPages ?? 0,
+  };
+}
+
+async function fetchMyPosts(page: number): Promise<MyPostsPage> {
+  const response = await apiClient.get<ApiResponse<MyPostsPayload>>(
+    API_ENDPOINTS.ME.POSTS,
+    {
+      params: {
+        page,
+        limit: PAGINATION_LIMIT,
+      },
+    },
+  );
+
+  const payload = response.data.data;
+  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+
+  return {
+    items: posts.map(normalizePost),
+    pagination: normalizePagination(payload.pagination, page),
+  };
+}
+
+export function useMyPosts() {
+  return useInfiniteQuery({
+    queryKey: [...queryKeys.me.all, "posts"],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchMyPosts(pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page >= lastPage.pagination.totalPages) {
+        return undefined;
+      }
+      return lastPage.pagination.page + 1;
+    },
+  });
+}
+
+async function fetchMySaved(page: number): Promise<MyPostsPage> {
+  const response = await apiClient.get<ApiResponse<MyPostsPayload>>(
+    API_ENDPOINTS.ME.SAVED,
+    {
+      params: {
+        page,
+        limit: PAGINATION_LIMIT,
+      },
+    },
+  );
+
+  const payload = response.data.data;
+  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+
+  return {
+    items: posts.map(normalizePost),
+    pagination: normalizePagination(payload.pagination, page),
+  };
+}
+
+export function useMySaved() {
+  return useInfiniteQuery({
+    queryKey: queryKeys.me.saved(),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchMySaved(pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page >= lastPage.pagination.totalPages) {
+        return undefined;
+      }
+      return lastPage.pagination.page + 1;
     },
   });
 }
