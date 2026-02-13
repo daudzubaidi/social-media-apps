@@ -1,14 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { CheckCircle2, User, Users, X } from "lucide-react";
+import { User, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FollowButton } from "@/components/user/follow-button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { InfiniteScroll } from "@/components/shared/infinite-scroll";
 import { LoadingState } from "@/components/shared/loading-state";
-import { cn } from "@/lib/utils";
 import { usePostLikes } from "@/services/queries/likes";
 
 interface LikesModalProps {
@@ -77,11 +77,7 @@ export function LikesModal({ open, onOpenChange, postId }: LikesModalProps) {
                   />
                 ) : (
                   <div className="space-y-5">
-                    {users.map((likedUser) => {
-                      const isFollowing = likedUser.isFollowedByMe;
-                      const actionLabel = isFollowing ? "Following" : "Follow";
-
-                      return (
+                    {users.map((likedUser) => (
                         <div key={likedUser.id} className="flex h-14 items-center gap-3">
                           <Avatar size="default" className="size-10">
                             <AvatarImage src={likedUser.avatarUrl} alt={likedUser.name} />
@@ -102,22 +98,13 @@ export function LikesModal({ open, onOpenChange, postId }: LikesModalProps) {
                           {likedUser.isMe ? (
                             <span className="text-sm text-muted-foreground">You</span>
                           ) : (
-                            <button
-                              type="button"
-                              className={cn(
-                                "inline-flex h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold leading-7 tracking-[-0.14px]",
-                                isFollowing
-                                  ? "w-[126px] border border-neutral-900 bg-transparent text-foreground sm:w-[160px]"
-                                  : "w-[92px] bg-gradient-to-r from-primary-300 to-primary-200 text-primary-foreground sm:w-[124px]",
-                              )}
-                            >
-                              {isFollowing && <CheckCircle2 className="size-5" />}
-                              {actionLabel}
-                            </button>
+                            <FollowButton
+                              username={likedUser.username}
+                              isFollowing={likedUser.isFollowedByMe}
+                            />
                           )}
                         </div>
-                      );
-                    })}
+                      ))}
 
                     <InfiniteScroll
                       hasMore={Boolean(hasNextPage)}

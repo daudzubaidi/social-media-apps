@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Grid3x3, Heart } from "lucide-react";
 import { ErrorState } from "@/components/shared/error-state";
-import { LoadingState } from "@/components/shared/loading-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import {
   ProfileHeader,
@@ -13,8 +11,6 @@ import {
 } from "@/components/user/profile-header";
 import { PostGrid, PostGridSkeleton } from "@/components/post/post-grid";
 import { useUserProfile, useUserPosts, useUserLikes } from "@/services/queries/users";
-import { getAuthUserId } from "@/lib/auth";
-import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 type TabType = "gallery" | "liked";
@@ -27,11 +23,6 @@ export default function PublicProfilePage() {
   const profileQuery = useUserProfile(username);
   const postsQuery = useUserPosts(username);
   const likesQuery = useUserLikes(username);
-
-  const authUserId = getAuthUserId();
-  const isOwnProfile = Boolean(
-    authUserId && profileQuery.data?.id === authUserId,
-  );
 
   const posts = useMemo(() => {
     const query = activeTab === "gallery" ? postsQuery : likesQuery;
@@ -81,24 +72,6 @@ export default function PublicProfilePage() {
   }
 
   const profile = profileQuery.data;
-
-  if (isOwnProfile) {
-    return (
-      <section className="mx-auto w-full max-w-[361px] px-4 pb-6 pt-4 md:max-w-[812px] md:pb-10 md:pt-10">
-        <div className="flex flex-col items-center justify-center gap-4 py-12">
-          <p className="text-center text-base font-bold leading-[30px] tracking-[-0.32px] text-foreground">
-            This is your profile
-          </p>
-          <Link
-            href={ROUTES.ME}
-            className="text-sm font-semibold text-primary hover:underline"
-          >
-            View your profile →
-          </Link>
-        </div>
-      </section>
-    );
-  }
 
   const tabs = [
     {

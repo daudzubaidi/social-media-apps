@@ -11,4 +11,6 @@ export const ROUTES = {
   ME_EDIT: "/me/edit",
   ME_FOLLOWERS: "/me/followers",
   ME_FOLLOWING: "/me/following",
+  PROFILE_FOLLOWERS: (username: string) => `/profile/${username}/followers`,
+  PROFILE_FOLLOWING: (username: string) => `/profile/${username}/following`,
 } as const;
