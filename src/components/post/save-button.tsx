@@ -20,7 +20,7 @@ export function SaveButton({ postId, savedByMe, className }: SaveButtonProps) {
       onClick={() => saveToggle.mutate({ savedByMe: isSaved })}
       disabled={saveToggle.isPending}
       className={cn(
-        "inline-flex items-center transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60",
         isSaved ? "text-destructive" : "text-foreground hover:text-foreground/80",
         className,
       )}

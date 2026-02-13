@@ -51,7 +51,7 @@ export function CommentItem({
             type="button"
             onClick={() => onDelete(comment.id)}
             disabled={isDeleting}
-            className="inline-flex size-6 items-center justify-center text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
             aria-label="Delete comment"
           >
             <Trash2 className="size-4" />

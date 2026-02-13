@@ -6,6 +6,7 @@ import { Search, X as XIcon, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
 import { LoadingState } from "@/components/shared/loading-state";
 import { InfiniteScroll } from "@/components/shared/infinite-scroll";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -17,7 +18,7 @@ export default function UserSearchPage() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
 
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+  const { data, isLoading, isError, error, hasNextPage, fetchNextPage, isFetchingNextPage, refetch } =
     useSearchUsers(debouncedQuery);
 
   const users = useMemo(() => {
@@ -67,6 +68,14 @@ export default function UserSearchPage() {
       <div className="flex-1 overflow-y-auto px-4 pt-4">
         {!showResults ? null : isLoading && users.length === 0 ? (
           <LoadingState className="min-h-[40vh]" />
+        ) : isError ? (
+          <ErrorState
+            message={error instanceof Error ? error.message : "Failed to search users"}
+            onRetry={() => {
+              void refetch();
+            }}
+            className="min-h-[40vh]"
+          />
         ) : showEmpty ? (
           <EmptyState
             title="No results found"

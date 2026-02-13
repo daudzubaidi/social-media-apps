@@ -125,7 +125,7 @@ export function PostCard({ post, className }: PostCardProps) {
           <button
             type="button"
             onClick={() => setCommentModalOpen(true)}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
+            className="inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
             aria-label="Open comments"
           >
             <MessageIcon className="size-6" />
@@ -135,7 +135,7 @@ export function PostCard({ post, className }: PostCardProps) {
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
+            className="inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
             aria-label="Share post"
           >
             <SendIcon className="size-6" />
@@ -176,7 +176,7 @@ export function PostCard({ post, className }: PostCardProps) {
           <button
             type="button"
             onClick={() => setIsCaptionExpanded((prev) => !prev)}
-            className="w-full text-left text-sm font-bold leading-7 tracking-[-0.14px] text-primary hover:underline md:text-base md:font-semibold md:leading-[30px] md:tracking-[-0.32px]"
+            className="w-full rounded text-left text-sm font-bold leading-7 tracking-[-0.14px] text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:font-semibold md:leading-[30px] md:tracking-[-0.32px]"
           >
             {isCaptionExpanded ? "Show Less" : "Show More"}
           </button>

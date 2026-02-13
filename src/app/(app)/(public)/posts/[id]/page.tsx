@@ -145,7 +145,7 @@ export default function PostDetailPage() {
                 <button
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
-                  className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-destructive"
+                  className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Delete post"
                 >
                   <Trash2 className="size-4" />
@@ -166,7 +166,7 @@ export default function PostDetailPage() {
                 <button
                   type="button"
                   onClick={() => setCommentModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-sm text-muted-foreground"
+                  className="inline-flex items-center gap-1 rounded text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Open comments"
                 >
                   <MessageCircle className="size-4" />
@@ -176,7 +176,7 @@ export default function PostDetailPage() {
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="inline-flex items-center text-sm text-muted-foreground"
+                  className="inline-flex items-center rounded text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Share post"
                 >
                   <Send className="size-4" />
@@ -188,7 +188,7 @@ export default function PostDetailPage() {
               <button
                 type="button"
                 onClick={() => setLikesModalOpen(true)}
-                className="text-xs font-semibold text-primary hover:underline"
+                className="rounded text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 View likes
               </button>

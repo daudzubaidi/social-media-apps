@@ -29,7 +29,7 @@ export function FollowButton({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-bold transition-colors",
+        "inline-flex items-center justify-center gap-2 rounded-full font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "h-10 px-4 text-sm leading-7 tracking-[-0.14px]",
         "md:h-12 md:px-6 md:text-base md:leading-[30px] md:tracking-[-0.32px]",
         isFollowing
