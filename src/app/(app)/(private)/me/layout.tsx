@@ -85,7 +85,7 @@ export default function MeLayout({ children }: { children: React.ReactNode }) {
         </Link>
       </header>
 
-      <div className="mx-auto w-full max-w-[361px] pb-6 pt-4 md:max-w-[812px] md:pb-10 md:pt-10">
+      <div className="mx-auto w-full max-w-[361px] px-4 pb-6 pt-4 md:max-w-[812px] md:pb-10 md:pt-10">
         <ProfileHeader profile={profile} />
 
         <nav className="mt-4 flex w-full items-center" aria-label="Profile tabs">

@@ -155,14 +155,24 @@ interface MyPostsPage {
 }
 
 function normalizePost(post: Post): Post {
+  // Handle simplified post structure from /api/me/saved endpoint
+  const author = post.author
+    ? {
+        ...post.author,
+        id: String(post.author.id),
+        avatarUrl: post.author.avatarUrl ?? undefined,
+      }
+    : {
+        id: "unknown",
+        username: "unknown",
+        name: "Unknown",
+        avatarUrl: undefined,
+      };
+
   return {
     ...post,
     id: String(post.id),
-    author: {
-      ...post.author,
-      id: String(post.author.id),
-      avatarUrl: post.author.avatarUrl ?? undefined,
-    },
+    author,
     likeCount: Number(post.likeCount ?? 0),
     commentCount: Number(post.commentCount ?? 0),
     shareCount:

@@ -25,18 +25,18 @@ export function PostGrid({
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-1 md:gap-3">
+      <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => (
           <Link
             key={post.id}
             href={ROUTES.POST_DETAIL(post.id)}
-            className="group relative aspect-square overflow-hidden bg-muted"
+            className="group relative aspect-square overflow-hidden rounded-sm bg-muted"
           >
             <FallbackImage
               src={post.imageUrl}
               alt={`Post by ${post.author.name}`}
               fill
-              sizes="(max-width: 768px) 120px, 262px"
+              sizes="(max-width: 768px) 118px, 268px"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
@@ -55,11 +55,11 @@ export function PostGrid({
 
 export function PostGridSkeleton() {
   return (
-    <div className="grid grid-cols-3 gap-1 md:gap-3">
+    <div className="grid grid-cols-3 gap-1">
       {Array.from({ length: 9 }).map((_, i) => (
         <div
           key={i}
-          className="aspect-square animate-pulse bg-muted"
+          className="aspect-square animate-pulse rounded-sm bg-muted"
         />
       ))}
     </div>
