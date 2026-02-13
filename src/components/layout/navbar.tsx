@@ -3,9 +3,12 @@
 import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Plus } from "lucide-react";
 import { SearchDropdown } from "@/components/layout/search-dropdown";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSearchUsers } from "@/services/queries/users";
+import { useAppDispatch } from "@/store/hooks";
+import { setCreatePostDialogOpen } from "@/features/ui/ui-slice";
 import { ROUTES } from "@/config/routes";
 import type { UserListItem } from "@/types/user";
 
@@ -16,6 +19,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
+  const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 300);
@@ -112,6 +116,16 @@ export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
         <div className="flex shrink-0 items-center gap-[13px]">
           {isAuthenticated ? (
             <>
+              {/* Create Post Button */}
+              <button
+                type="button"
+                onClick={() => dispatch(setCreatePostDialogOpen(true))}
+                className="flex h-12 shrink-0 items-center gap-2 rounded-full bg-primary-300 px-6 text-base font-bold leading-[30px] tracking-[-0.32px] text-neutral-25 transition-opacity hover:opacity-90"
+              >
+                <Plus className="size-5" />
+                Create Post
+              </button>
+
               <div className="relative size-[48px] shrink-0">
                 {avatarUrl ? (
                   <Image

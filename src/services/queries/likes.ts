@@ -124,6 +124,68 @@ export function usePostLikes(postId: string, enabled = true) {
   });
 }
 
+interface MyLikesPayload {
+  posts?: Post[];
+  pagination?: Pagination;
+}
+
+interface MyLikesPage {
+  items: Post[];
+  pagination: Pagination;
+}
+
+function normalizePost(post: Post): Post {
+  return {
+    ...post,
+    id: String(post.id),
+    author: {
+      ...post.author,
+      id: String(post.author.id),
+      avatarUrl: post.author.avatarUrl ?? undefined,
+    },
+    likeCount: Number(post.likeCount ?? 0),
+    commentCount: Number(post.commentCount ?? 0),
+    shareCount:
+      typeof post.shareCount === "number" ? Number(post.shareCount) : undefined,
+    likedByMe: Boolean(post.likedByMe),
+    savedByMe: Boolean(post.savedByMe),
+  };
+}
+
+async function fetchMyLikes(page: number): Promise<MyLikesPage> {
+  const response = await apiClient.get<ApiResponse<MyLikesPayload>>(
+    API_ENDPOINTS.ME.LIKES,
+    {
+      params: {
+        page,
+        limit: PAGINATION_LIMIT,
+      },
+    },
+  );
+
+  const payload = response.data.data;
+  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+
+  return {
+    items: posts.map(normalizePost),
+    pagination: normalizePagination(payload.pagination, page),
+  };
+}
+
+export function useMyLikes() {
+  return useInfiniteQuery({
+    queryKey: queryKeys.me.likes(),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchMyLikes(pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page >= lastPage.pagination.totalPages) {
+        return undefined;
+      }
+      return lastPage.pagination.page + 1;
+    },
+  });
+}
+
 export function useLikeToggle(postId: string) {
   const queryClient = useQueryClient();
   const detailKey = queryKeys.posts.detail(postId);
