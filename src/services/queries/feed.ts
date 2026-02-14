@@ -15,8 +15,6 @@ export interface FeedPage {
   pagination: Pagination;
 }
 
-const MIN_FEED_ITEMS = process.env.NODE_ENV === "development" ? 3 : 0;
-
 function getSavedStateMap(feedData?: InfiniteData<FeedPage>): Map<string, boolean> {
   const map = new Map<string, boolean>();
   feedData?.pages.forEach((page) => {
@@ -52,86 +50,46 @@ function normalizePost(post: Post, savedStateMap: Map<string, boolean>): Post {
   };
 }
 
-async function fetchFallbackPosts(
+async function fetchAllPosts(
+  page: number,
   savedStateMap: Map<string, boolean>,
-): Promise<Post[]> {
+): Promise<FeedPage> {
   try {
     const response = await apiClient.get<ApiResponse<Record<string, unknown>>>(
       API_ENDPOINTS.POSTS.LIST,
       {
         params: {
-          page: 1,
+          page,
           limit: PAGINATION_LIMIT,
         },
       },
     );
 
-    const { items } = extractPaginatedList<Post>(response.data.data);
-    return items.map((item) => normalizePost(item, savedStateMap));
+    const { items, pagination } = extractPaginatedList<Post>(response.data.data);
+    return {
+      items: items.map((item) => normalizePost(item, savedStateMap)),
+      pagination,
+    };
   } catch {
-    return [];
+    return {
+      items: [],
+      pagination: {
+        page: 1,
+        limit: PAGINATION_LIMIT,
+        total: 0,
+        totalPages: 0,
+      },
+    };
   }
-}
-
-function mergeUniquePosts(primary: Post[], secondary: Post[], limit: number): Post[] {
-  if (limit <= 0 || primary.length >= limit) {
-    return primary;
-  }
-
-  const merged = [...primary];
-  const existingIds = new Set(merged.map((item) => item.id));
-
-  for (const item of secondary) {
-    if (existingIds.has(item.id)) {
-      continue;
-    }
-
-    merged.push(item);
-    existingIds.add(item.id);
-
-    if (merged.length >= limit) {
-      break;
-    }
-  }
-
-  return merged;
 }
 
 async function fetchFeed(
   page: number,
   savedStateMap: Map<string, boolean>,
 ): Promise<FeedPage> {
-  const response = await apiClient.get<ApiResponse<Record<string, unknown>>>(
-    API_ENDPOINTS.FEED,
-    {
-      params: {
-        page,
-        limit: PAGINATION_LIMIT,
-      },
-    },
-  );
-
-  const { items, pagination } = extractPaginatedList<Post>(response.data.data);
-  const normalizedFeedPosts = items.map((item) => normalizePost(item, savedStateMap));
-
-  if (page === 1 && normalizedFeedPosts.length < MIN_FEED_ITEMS) {
-    const fallbackPosts = await fetchFallbackPosts(savedStateMap);
-    const mergedPosts = mergeUniquePosts(
-      normalizedFeedPosts,
-      fallbackPosts,
-      MIN_FEED_ITEMS,
-    );
-
-    return {
-      items: mergedPosts,
-      pagination,
-    };
-  }
-
-  return {
-    items: normalizedFeedPosts,
-    pagination,
-  };
+  // Always use all posts endpoint for now
+  // TODO: Implement personalized feed when follow system is ready
+  return fetchAllPosts(page, savedStateMap);
 }
 
 export function useFeed() {

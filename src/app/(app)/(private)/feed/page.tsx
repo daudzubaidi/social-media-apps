@@ -12,32 +12,34 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function FeedCardSkeleton() {
   return (
-    <div className="w-full">
+    <div className="w-full animate-pulse">
       {/* Header skeleton */}
       <div className="flex items-center gap-2 pb-2 md:gap-3 md:pb-3">
-        <Skeleton className="size-11 shrink-0 rounded-full md:size-16" />
+        <div className="size-11 shrink-0 rounded-full bg-neutral-800 md:size-16" />
         <div className="flex-1 space-y-1 md:space-y-2">
-          <Skeleton className="h-4 w-1/3 md:h-5" />
-          <Skeleton className="h-3 w-1/4 md:h-4" />
+          <div className="h-4 w-1/3 rounded bg-neutral-800 md:h-5" />
+          <div className="h-3 w-1/4 rounded bg-neutral-800 md:h-4" />
         </div>
       </div>
 
       {/* Image skeleton */}
-      <Skeleton className="aspect-square w-full rounded-lg" />
+      <div className="aspect-square w-full rounded-lg bg-neutral-800" />
 
       {/* Actions skeleton */}
       <div className="flex items-center justify-between py-2 md:py-3">
         <div className="flex items-center gap-3 md:gap-4">
-          <Skeleton className="h-6 w-12" />
-          <Skeleton className="h-6 w-12" />
-          <Skeleton className="size-6" />
+          <div className="h-6 w-12 rounded bg-neutral-800" />
+          <div className="h-6 w-12 rounded bg-neutral-800" />
+          <div className="size-6 rounded bg-neutral-800" />
         </div>
-        <Skeleton className="size-6" />
+        <div className="size-6 rounded bg-neutral-800" />
       </div>
 
       {/* Caption skeleton */}
-      <Skeleton className="h-4 w-full md:h-5" />
-      <Skeleton className="h-4 w-4/5 md:h-5" />
+      <div className="space-y-1">
+        <div className="h-4 w-full rounded bg-neutral-800 md:h-5" />
+        <div className="h-4 w-4/5 rounded bg-neutral-800 md:h-5" />
+      </div>
     </div>
   );
 }
@@ -75,9 +77,9 @@ export default function FeedPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto flex w-full max-w-[361px] flex-col gap-4 px-4 pb-4 pt-4 md:max-w-[600px] md:gap-6 md:px-0 md:pb-6 md:pt-10">
+      <div className="mx-auto flex w-full max-w-[361px] flex-col gap-0 pb-4 pt-4 md:max-w-[600px] md:pb-6 md:pt-10">
         <FeedCardSkeleton />
-        <hr className="border-border" />
+        <div className="my-4 h-px w-full bg-neutral-900" />
         <FeedCardSkeleton />
       </div>
     );
@@ -87,7 +89,7 @@ export default function FeedPage() {
     const message = error instanceof Error ? error.message : "Failed to load feed";
 
     return (
-      <div className="mx-auto w-full max-w-[361px] px-4 pt-4 md:max-w-[600px] md:px-0 md:pt-10">
+      <div className="mx-auto w-full max-w-[361px] pt-4 md:max-w-[600px] md:pt-10">
         <ErrorState
           message={message}
           onRetry={() => {
@@ -101,7 +103,7 @@ export default function FeedPage() {
 
   if (posts.length === 0) {
     return (
-      <div className="mx-auto w-full max-w-[361px] px-4 pt-4 md:max-w-[600px] md:px-0 md:pt-10">
+      <div className="mx-auto w-full max-w-[361px] pt-4 md:max-w-[600px] md:pt-10">
         <EmptyState
           icon={Users}
           title="No posts yet"
@@ -113,13 +115,21 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[361px] flex-col gap-4 px-4 pb-4 pt-4 md:max-w-[600px] md:gap-6 md:px-0 md:pb-6 md:pt-10">
+    <div className="mx-auto flex w-full max-w-[361px] flex-col gap-0 pb-4 pt-4 md:max-w-[600px] md:pb-6 md:pt-10">
       {posts.map((post, index) => (
         <Fragment key={post.id}>
           <PostCard post={post} />
-          {index < posts.length - 1 && <hr className="border-neutral-900" />}
+          {index < posts.length - 1 && <div className="my-4 h-px w-full bg-neutral-900" />}
         </Fragment>
       ))}
+
+      {/* Loading more indicator */}
+      {isFetchingNextPage && (
+        <>
+          <div className="my-4 h-px w-full bg-neutral-900" />
+          <FeedCardSkeleton />
+        </>
+      )}
 
       <InfiniteScroll
         hasMore={Boolean(hasNextPage)}

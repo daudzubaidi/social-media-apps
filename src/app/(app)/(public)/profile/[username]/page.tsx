@@ -17,7 +17,8 @@ type TabType = "gallery" | "liked";
 
 export default function PublicProfilePage() {
   const params = useParams<{ username: string }>();
-  const username = params?.username ?? "";
+  const encodedUsername = params?.username ?? "";
+  const username = decodeURIComponent(encodedUsername);
   const [activeTab, setActiveTab] = useState<TabType>("gallery");
 
   const profileQuery = useUserProfile(username);

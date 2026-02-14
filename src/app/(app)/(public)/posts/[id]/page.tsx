@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { MessageCircle, Send, Trash2 } from "lucide-react";
+import { ArrowLeft, MessageCircle, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { FallbackImage } from "@/components/shared/fallback-image";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -89,6 +89,8 @@ export default function PostDetailPage() {
 
   const authUserId = getAuthUserId();
   const isOwner = Boolean(isAuthenticated && authUserId === post.author.id);
+  const shareCount =
+    typeof post.shareCount === "number" ? post.shareCount : post.commentCount;
 
   async function handleShare() {
     try {
@@ -113,8 +115,38 @@ export default function PostDetailPage() {
     });
   }
 
+  function handleCloseDetail() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.replace(ROUTES.FEED);
+  }
+
   return (
     <>
+      <div className="sticky top-0 z-30 mx-auto flex w-full max-w-[1200px] items-center justify-between bg-black/95 px-4 pb-2 pt-4 backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={handleCloseDetail}
+          className="inline-flex items-center gap-2 rounded-full border border-neutral-900 px-3 py-2 text-sm font-semibold text-neutral-25 transition-colors hover:bg-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Back"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </button>
+
+        <button
+          type="button"
+          onClick={handleCloseDetail}
+          className="inline-flex size-9 items-center justify-center rounded-full border border-neutral-900 text-neutral-25 transition-colors hover:bg-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Close post detail"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+
       <div className="mx-auto w-full max-w-[1200px] px-4 py-6">
         <div className="grid gap-4 rounded-2xl border border-border bg-card p-4 sm:grid-cols-[1fr_420px] sm:p-6">
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
@@ -161,6 +193,14 @@ export default function PostDetailPage() {
                   postId={post.id}
                   likedByMe={post.likedByMe}
                   likeCount={post.likeCount}
+                  onLikeClick={
+                    isOwner
+                      ? () => {
+                          setLikesModalOpen(true);
+                        }
+                      : undefined
+                  }
+                  onCountClick={() => setLikesModalOpen(true)}
                 />
 
                 <button
@@ -176,10 +216,11 @@ export default function PostDetailPage() {
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="inline-flex items-center rounded text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex items-center gap-1 rounded text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Share post"
                 >
                   <Send className="size-4" />
+                  <span>{shareCount}</span>
                 </button>
 
                 <SaveButton postId={post.id} savedByMe={post.savedByMe} className="ml-auto" />

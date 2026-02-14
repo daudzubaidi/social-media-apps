@@ -59,53 +59,13 @@ export function useFollowToggle(username: string) {
         await apiClient.post<ApiResponse<null>>(endpoint);
       }
     },
-    onMutate: async ({ isFollowing }) => {
-      const nextFollowing = !isFollowing;
-
+    onSuccess: async () => {
       await Promise.all([
-        queryClient.cancelQueries({ queryKey: targetKey }),
-        queryClient.cancelQueries({ queryKey: meKey }),
+        queryClient.refetchQueries({ queryKey: targetKey }),
+        queryClient.refetchQueries({ queryKey: meKey }),
       ]);
-
-      const previousTarget = queryClient.getQueryData<Profile>(targetKey);
-      const previousMe = queryClient.getQueryData<Profile>(meKey);
-
-      queryClient.setQueryData<Profile>(targetKey, (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          isFollowing: nextFollowing,
-          counts: {
-            ...old.counts,
-            followers: Math.max(0, old.counts.followers + (nextFollowing ? 1 : -1)),
-          },
-        };
-      });
-
-      queryClient.setQueryData<Profile>(meKey, (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          counts: {
-            ...old.counts,
-            following: Math.max(0, old.counts.following + (nextFollowing ? 1 : -1)),
-          },
-        };
-      });
-
-      return { previousTarget, previousMe };
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previousTarget) {
-        queryClient.setQueryData(targetKey, context.previousTarget);
-      }
-      if (context?.previousMe) {
-        queryClient.setQueryData(meKey, context.previousMe);
-      }
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: targetKey });
-      void queryClient.invalidateQueries({ queryKey: meKey });
       void queryClient.invalidateQueries({ queryKey: queryKeys.users.followers(username) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.me.following() });
     },

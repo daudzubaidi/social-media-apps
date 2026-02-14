@@ -1,24 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronLeft, Grid3x3, Bookmark } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronLeft, Grid3x3, Bookmark, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ErrorState } from "@/components/shared/error-state";
 import {
   ProfileHeader,
   ProfileHeaderSkeleton,
 } from "@/components/user/profile-header";
+import { clearToken } from "@/lib/auth";
 import { ROUTES } from "@/config/routes";
 import { useMe } from "@/services/queries/profile";
 import { cn } from "@/lib/utils";
 
 export default function MeLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isEditPage = pathname.startsWith(ROUTES.ME_EDIT);
   const { data: profile, isPending, isError, error, refetch } = useMe({
     enabled: !isEditPage,
   });
+
+  const handleLogout = () => {
+    clearToken();
+    router.push(ROUTES.LOGIN);
+  };
 
   if (isEditPage) {
     return <>{children}</>;
@@ -75,14 +82,24 @@ export default function MeLayout({ children }: { children: React.ReactNode }) {
             {profile.name}
           </p>
         </div>
-        <Link href={ROUTES.ME_EDIT} aria-label="Edit profile">
-          <Avatar className="size-10">
-            <AvatarImage src={profile.avatarUrl} alt={profile.name} />
-            <AvatarFallback className="bg-neutral-800 text-neutral-25">
-              {profile.name?.charAt(0)?.toUpperCase() ?? "U"}
-            </AvatarFallback>
-          </Avatar>
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex size-10 items-center justify-center rounded-full border border-neutral-900 text-destructive transition-colors active:bg-neutral-900"
+            aria-label="Logout"
+          >
+            <LogOut className="size-5" />
+          </button>
+          <Link href={ROUTES.ME_EDIT} aria-label="Edit profile">
+            <Avatar className="size-10">
+              <AvatarImage src={profile.avatarUrl} alt={profile.name} />
+              <AvatarFallback className="bg-neutral-800 text-neutral-25">
+                {profile.name?.charAt(0)?.toUpperCase() ?? "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
       </header>
 
       <div className="mx-auto w-full max-w-[361px] px-4 pb-6 pt-4 md:max-w-[812px] md:pb-10 md:pt-10">

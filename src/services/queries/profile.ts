@@ -47,6 +47,22 @@ function extractProfile(payload: unknown): Profile {
 
   const record = payload as Record<string, unknown>;
   const envelope = payload as ProfileEnvelope;
+
+  // Check if payload has separate profile and stats
+  if (envelope.profile && record.stats && typeof record.stats === "object") {
+    const stats = record.stats as Record<string, unknown>;
+    const profileWithStats = {
+      ...envelope.profile,
+      counts: {
+        post: Number(stats.posts ?? 0),
+        followers: Number(stats.followers ?? 0),
+        following: Number(stats.following ?? 0),
+        likes: Number(stats.likes ?? 0),
+      },
+    };
+    return normalizeProfile(profileWithStats);
+  }
+
   const profileCandidate =
     envelope.profile ??
     envelope.user ??
@@ -95,7 +111,9 @@ export function useMe(options?: { enabled?: boolean }) {
         API_ENDPOINTS.ME.PROFILE,
       );
 
-      return extractProfile(response.data.data);
+      const profile = extractProfile(response.data.data);
+      // Force set isMe to true since this is /api/me endpoint
+      return { ...profile, isMe: true };
     },
   });
 }
@@ -146,6 +164,7 @@ export function useUpdateMe() {
 
 interface MyPostsPayload {
   posts?: Post[];
+  items?: Post[];
   pagination?: Pagination;
 }
 
@@ -206,7 +225,9 @@ async function fetchMyPosts(page: number): Promise<MyPostsPage> {
   );
 
   const payload = response.data.data;
-  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+  // API returns either 'posts' or 'items' depending on endpoint
+  const postsArray = payload.items ?? payload.posts ?? [];
+  const posts = Array.isArray(postsArray) ? postsArray : [];
 
   return {
     items: posts.map(normalizePost),
@@ -240,7 +261,9 @@ async function fetchMySaved(page: number): Promise<MyPostsPage> {
   );
 
   const payload = response.data.data;
-  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+  // API returns either 'posts' or 'items' depending on endpoint
+  const postsArray = payload.items ?? payload.posts ?? [];
+  const posts = Array.isArray(postsArray) ? postsArray : [];
 
   return {
     items: posts.map(normalizePost),

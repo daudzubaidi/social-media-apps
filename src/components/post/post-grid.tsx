@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { FallbackImage } from "@/components/shared/fallback-image";
 import { InfiniteScroll } from "@/components/shared/infinite-scroll";
+import { LikesModal } from "@/components/post/likes-modal";
 import { ROUTES } from "@/config/routes";
 import type { Post } from "@/types/post";
 
@@ -19,8 +22,18 @@ export function PostGrid({
   isLoading,
   onLoadMore,
 }: PostGridProps) {
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [likesModalOpen, setLikesModalOpen] = useState(false);
+
   if (posts.length === 0) {
     return null;
+  }
+
+  function handleLikeCountClick(postId: string, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedPostId(postId);
+    setLikesModalOpen(true);
   }
 
   return (
@@ -39,7 +52,19 @@ export function PostGrid({
               sizes="(max-width: 768px) 118px, 268px"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
+
+            {/* Like Count Overlay */}
+            {post.likeCount > 0 && (
+              <button
+                type="button"
+                onClick={(e) => handleLikeCountClick(post.id, e)}
+                className="absolute left-2 top-2 z-10 hidden pointer-events-none items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs font-semibold text-white opacity-0 transition-opacity duration-300 hover:bg-black/80 md:flex md:group-hover:pointer-events-auto md:group-hover:opacity-100"
+              >
+                <Heart className="size-3 fill-white" />
+                <span>{post.likeCount}</span>
+              </button>
+            )}
           </Link>
         ))}
       </div>
@@ -49,6 +74,17 @@ export function PostGrid({
         isLoading={isLoading}
         onLoadMore={onLoadMore}
       />
+
+      {selectedPostId && (
+        <LikesModal
+          open={likesModalOpen}
+          onOpenChange={(open) => {
+            setLikesModalOpen(open);
+            if (!open) setSelectedPostId(null);
+          }}
+          postId={selectedPostId}
+        />
+      )}
     </>
   );
 }

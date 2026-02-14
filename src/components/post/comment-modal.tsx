@@ -110,6 +110,9 @@ export function CommentModal({ open, onOpenChange, post }: CommentModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
+        onEscapeKeyDown={() => onOpenChange(false)}
+        onPointerDownOutside={() => onOpenChange(false)}
+        onInteractOutside={() => onOpenChange(false)}
         className="top-auto bottom-0 h-[570px] w-screen max-w-[393px] translate-y-0 gap-0 overflow-hidden border-0 bg-transparent p-0 shadow-none sm:top-[50%] sm:bottom-auto sm:h-[768px] sm:max-w-[1200px] sm:translate-y-[-50%]"
       >
         <div className="flex h-full flex-col items-end gap-2 sm:gap-6">

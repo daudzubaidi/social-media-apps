@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/user/follow-button";
@@ -31,6 +32,48 @@ function getFollowingHref(profile: Profile): string {
 }
 
 export function ProfileHeader({ profile, className }: ProfileHeaderProps) {
+  const handleShareProfile = async () => {
+    const sharePath = ROUTES.PROFILE(profile.username);
+    const shareUrl =
+      typeof window !== "undefined"
+        ? `${window.location.origin}${sharePath}`
+        : sharePath;
+    const shareTitle = `${profile.name} (@${profile.username})`;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: "Check out this profile on Sociality",
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        // Ignore manual dismiss from native share sheet.
+        if (
+          error &&
+          typeof error === "object" &&
+          "name" in error &&
+          (error as { name?: string }).name === "AbortError"
+        ) {
+          return;
+        }
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Profile link copied");
+        return;
+      } catch {
+        // Continue to generic error fallback below.
+      }
+    }
+
+    toast.error("Unable to share profile");
+  };
+
   return (
     <section className={cn("flex flex-col gap-4", className)}>
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -56,7 +99,7 @@ export function ProfileHeader({ profile, className }: ProfileHeaderProps) {
           {profile.isMe ? (
             <Link
               href={ROUTES.ME_EDIT}
-              className="flex h-10 flex-1 items-center justify-center rounded-full border border-neutral-900 px-4 text-sm font-bold leading-[28px] tracking-[-0.14px] text-neutral-25 md:h-12 md:w-[130px] md:flex-none md:text-base md:leading-[30px] md:tracking-[-0.32px]"
+              className="relative z-10 flex h-10 flex-1 items-center justify-center rounded-full border border-neutral-900 px-4 text-sm font-bold leading-[28px] tracking-[-0.14px] text-neutral-25 md:h-12 md:w-[130px] md:flex-none md:text-base md:leading-[30px] md:tracking-[-0.32px]"
             >
               Edit Profile
             </Link>
@@ -70,8 +113,11 @@ export function ProfileHeader({ profile, className }: ProfileHeaderProps) {
 
           <button
             type="button"
+            onClick={() => {
+              void handleShareProfile();
+            }}
             aria-label="Share profile"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full border border-neutral-900 text-neutral-25 md:size-12"
+            className="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-neutral-900 text-neutral-25 md:size-12"
           >
             <Share2 className="size-5 md:size-6" />
           </button>

@@ -2,15 +2,11 @@
 
 import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Plus } from "lucide-react";
 import { SearchDropdown } from "@/components/layout/search-dropdown";
+import { UserDropdown } from "@/components/layout/user-dropdown";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSearchUsers } from "@/services/queries/users";
-import { useAppDispatch } from "@/store/hooks";
-import { setCreatePostDialogOpen } from "@/features/ui/ui-slice";
 import { ROUTES } from "@/config/routes";
-import type { UserListItem } from "@/types/user";
 
 interface NavbarProps {
   isAuthenticated: boolean;
@@ -19,7 +15,6 @@ interface NavbarProps {
 }
 
 export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
-  const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 300);
@@ -37,10 +32,10 @@ export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
 
   return (
     <header className="hidden h-20 border-b border-neutral-900 bg-black md:block">
-      <div className="mx-auto flex h-full w-[1440px] items-center justify-between px-[120px]">
+      <div className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-4 px-4 lg:px-[120px]">
         {/* Logo + Brand */}
         <Link
-          href={isAuthenticated ? ROUTES.FEED : ROUTES.HOME}
+          href={ROUTES.HOME}
           className="flex shrink-0 items-center gap-[11px]"
         >
           <div className="relative size-[30px] overflow-hidden">
@@ -65,8 +60,8 @@ export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
         </Link>
 
         {/* Search bar */}
-        <div className="relative shrink-0">
-          <div className="flex h-12 w-[491px] items-center gap-[6px] rounded-full border border-neutral-900 bg-neutral-950 px-4 py-2">
+        <div className="relative min-w-0 flex-1 max-w-[491px] shrink">
+          <div className="flex h-12 w-full items-center gap-[6px] rounded-full border border-neutral-900 bg-neutral-950 px-4 py-2">
             <div className="relative size-5 shrink-0">
               <svg
                 viewBox="0 0 20 20"
@@ -113,38 +108,9 @@ export function Navbar({ isAuthenticated, avatarUrl, userName }: NavbarProps) {
         </div>
 
         {/* User Menu / Auth Buttons */}
-        <div className="flex shrink-0 items-center gap-[13px]">
+        <div className="flex shrink-0 items-center gap-3">
           {isAuthenticated ? (
-            <>
-              {/* Create Post Button */}
-              <button
-                type="button"
-                onClick={() => dispatch(setCreatePostDialogOpen(true))}
-                className="flex h-12 shrink-0 items-center gap-2 rounded-full bg-primary-300 px-6 text-base font-bold leading-[30px] tracking-[-0.32px] text-neutral-25 transition-opacity hover:opacity-90"
-              >
-                <Plus className="size-5" />
-                Create Post
-              </button>
-
-              <div className="relative size-[48px] shrink-0">
-                {avatarUrl ? (
-                  <Image
-                    src={avatarUrl}
-                    alt={userName || "User"}
-                    fill
-                    sizes="48px"
-                    className="rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex size-full items-center justify-center rounded-full bg-neutral-800 text-base font-bold text-neutral-25">
-                    {userName?.charAt(0).toUpperCase() || "U"}
-                  </div>
-                )}
-              </div>
-              <p className="shrink-0 text-base font-bold leading-[30px] tracking-[-0.32px] text-neutral-25">
-                {userName || "User"}
-              </p>
-            </>
+            <UserDropdown avatarUrl={avatarUrl} userName={userName} />
           ) : (
             <>
               <Link

@@ -60,14 +60,14 @@ export function PostCard({ post, className }: PostCardProps) {
   return (
     <article
       className={cn(
-        "flex w-full flex-col gap-3 overflow-hidden bg-background md:gap-3",
+        "flex w-full flex-col gap-2 bg-background",
         className,
       )}
     >
       {/* Post Container: Header + Image */}
-      <div className="flex w-full flex-col gap-3 md:gap-3">
+      <div className="flex w-full flex-col gap-2">
         {/* Post Header */}
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 md:gap-2">
           <Link
             href={ROUTES.PROFILE(post.author.username)}
             className="relative size-11 shrink-0 overflow-hidden rounded-full bg-muted md:size-16"
@@ -101,7 +101,7 @@ export function PostCard({ post, className }: PostCardProps) {
         </div>
 
         {/* Post Image */}
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[6px] bg-muted">
           <FallbackImage
             src={post.imageUrl}
             alt={`Post by ${post.author.name}`}
@@ -125,7 +125,7 @@ export function PostCard({ post, className }: PostCardProps) {
           <button
             type="button"
             onClick={() => setCommentModalOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
+            className="relative z-10 inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
             aria-label="Open comments"
           >
             <MessageIcon className="size-6" />
@@ -135,7 +135,7 @@ export function PostCard({ post, className }: PostCardProps) {
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
+            className="relative z-10 inline-flex items-center gap-1.5 rounded text-sm font-semibold leading-7 tracking-[-0.28px] text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:gap-[6px] md:text-base md:leading-[30px] md:tracking-[-0.32px]"
             aria-label="Share post"
           >
             <SendIcon className="size-6" />
@@ -143,12 +143,16 @@ export function PostCard({ post, className }: PostCardProps) {
           </button>
         </div>
 
-        <SaveButton postId={post.id} savedByMe={post.savedByMe} />
+        <SaveButton
+          postId={post.id}
+          savedByMe={post.savedByMe}
+          className="relative z-10"
+        />
       </div>
 
       {/* Post Content */}
-      <div className="flex w-full flex-col gap-1 md:w-[526px]">
-        <p className="w-full text-sm font-bold leading-7 tracking-[-0.28px] text-foreground md:text-base md:leading-[30px] md:tracking-[-0.32px]">
+      <div className="flex w-full flex-col leading-7 md:w-[526px]">
+        <p className="w-full text-sm font-bold leading-7 tracking-[-0.14px] text-foreground md:text-base md:leading-[30px] md:tracking-[-0.32px]">
           <Link
             href={ROUTES.PROFILE(post.author.username)}
             className="hover:underline"
@@ -175,8 +179,11 @@ export function PostCard({ post, className }: PostCardProps) {
         {isCaptionOverflowing && (
           <button
             type="button"
-            onClick={() => setIsCaptionExpanded((prev) => !prev)}
-            className="w-full rounded text-left text-sm font-bold leading-7 tracking-[-0.14px] text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:font-semibold md:leading-[30px] md:tracking-[-0.32px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCaptionExpanded((prev) => !prev);
+            }}
+            className="relative z-10 w-full cursor-pointer rounded text-left text-sm font-bold leading-7 tracking-[-0.14px] text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:font-semibold md:leading-[30px] md:tracking-[-0.32px]"
           >
             {isCaptionExpanded ? "Show Less" : "Show More"}
           </button>

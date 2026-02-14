@@ -74,7 +74,7 @@ export function useCreatePost() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.feed.all });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.me.profile() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.me.all });
     },
   });
 }

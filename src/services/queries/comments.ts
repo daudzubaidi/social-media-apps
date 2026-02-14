@@ -152,6 +152,7 @@ export function useCreateComment(postId: string) {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: commentsKey }),
         queryClient.cancelQueries({ queryKey: detailKey }),
+        queryClient.cancelQueries({ queryKey: queryKeys.feed.all }),
       ]);
 
       const previousComments =
@@ -211,6 +212,23 @@ export function useCreateComment(postId: string) {
         patchPostDetailCommentCount(oldData, 1),
       );
 
+      // Update feed cache to increment comment count
+      queryClient.setQueryData(queryKeys.feed.all, (oldData: InfiniteData<{ items: Post[]; pagination: unknown }> | undefined) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((post) =>
+              post.id === postId
+                ? { ...post, commentCount: post.commentCount + 1 }
+                : post
+            ),
+          })),
+        };
+      });
+
       return { previousComments, previousDetail, tempId };
     },
     onError: (_error, _variables, context) => {
@@ -239,6 +257,7 @@ export function useCreateComment(postId: string) {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: commentsKey });
       void queryClient.invalidateQueries({ queryKey: detailKey });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.feed.all });
     },
   });
 }
@@ -258,6 +277,7 @@ export function useDeleteComment(postId: string) {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: commentsKey }),
         queryClient.cancelQueries({ queryKey: detailKey }),
+        queryClient.cancelQueries({ queryKey: queryKeys.feed.all }),
       ]);
 
       const previousComments =
@@ -297,6 +317,23 @@ export function useDeleteComment(postId: string) {
         queryClient.setQueryData<PostDetailCache>(detailKey, (oldData) =>
           patchPostDetailCommentCount(oldData, -removedCount),
         );
+
+        // Update feed cache to decrement comment count
+        queryClient.setQueryData(queryKeys.feed.all, (oldData: InfiniteData<{ items: Post[]; pagination: unknown }> | undefined) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((post) =>
+                post.id === postId
+                  ? { ...post, commentCount: Math.max(0, post.commentCount - removedCount) }
+                  : post
+              ),
+            })),
+          };
+        });
       }
 
       return { previousComments, previousDetail };
@@ -312,6 +349,7 @@ export function useDeleteComment(postId: string) {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: commentsKey });
       void queryClient.invalidateQueries({ queryKey: detailKey });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.feed.all });
     },
   });
 }
